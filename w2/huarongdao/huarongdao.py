@@ -51,43 +51,29 @@ def moves(board, ex, ey, sx, sy, k):
 
 
 def astar(board, ex, ey, sx, sy, tx, ty, k):
-    transitions = {}
     visited = set()
-    queue = [(0, 0, ex, ey, sx, sy, None, None, None, None)]
+    queue = [(0, 0, ex, ey, sx, sy)]
 
     while queue:
-        costh, distance, ex, ey, sx, sy, last_ex, last_ey, last_sx, last_sy = heappop(queue)
-        # print costh, distance, '(', ex, ey, ') (', sx, sy, ')'
+        costh, distance, ex, ey, sx, sy = heappop(queue)
         if (ex, ey, sx, sy) in visited:
             continue
         visited.add((ex, ey, sx, sy))
-        # transitions[(ex, ey, sx, sy)] = (last_ex, last_ey, last_sx, last_sy)
 
         if (sx, sy) == (tx, ty):
-            return distance, transitions, (ex, ey, sx, sy)
+            return distance
 
         for ex_, ey_, sx_, sy_, cost in moves(board, ex, ey, sx, sy, k):
             heappush(queue, (h(ex_, ey_, sx_, sy_, tx, ty) + distance + cost, distance + cost,
-                             ex_, ey_, sx_, sy_,
-                             ex, ey, sx, sy))
+                             ex_, ey_, sx_, sy_))
 
-    return -1, transitions, (None, None, None, None)
-
-
-def walk_transitions(transitions, ex, ey, sx, sy):
-    result = [(ex, ey, sx, sy)]
-    while transitions.get((ex, ey, sx, sy)):
-        ex, ey, sx, sy = transitions.get((ex, ey, sx, sy))
-        result.append((ex, ey, sx, sy))
-    result.reverse()
-    return result
+    return -1
 
 
 def solve(board, queries, k):
     for query in queries:
         ex, ey, sx, sy, tx, ty = query
-        distance, transitions, (ex, ey, sx, sy) = astar(board, ex, ey, sx, sy, tx, ty, k)
-        # print walk_transitions(transitions, ex, ey, sx, sy)
+        distance = astar(board, ex, ey, sx, sy, tx, ty, k)
         print distance
 
 
